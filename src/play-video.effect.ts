@@ -39,10 +39,6 @@ interface EffectModel {
 interface OverlayData {
     overlayInstance: string;
     volume: number;
-    audioOutputDevice: {
-        deviceId: string;
-        label: string;
-    };
 }
 
 /* https://github.com/crowbartools/Firebot/blob/master/src/backend/common/handlers/mediaProcessor.js#L40-L44 */
@@ -111,6 +107,12 @@ const effect: EffectType<EffectModel & OverlayData> = {
             "Bottom Middle",
             "Bottom Right"
         ];
+
+        // Clear videos played state
+        $scope.clearVideosPlayed = function () {
+            backendCommunicator.fireEvent('play-video-plus-plus:clear-videos-played', $scope.effect.id);
+            $scope.playedVideosCleared = true;
+        };
 
         // Set Video Type
         $scope.setVideoType = function (type: 'Local Video' | 'Random From Folder') {
@@ -231,7 +233,7 @@ const effect: EffectType<EffectModel & OverlayData> = {
         }
 
         let duration;
-        const result: any = await modules.frontendCommunicator.fireEventAsync("getVideoDuration", data.filepath);
+        const result: any = await modules.frontendCommunicator.fireEventAsync('getVideoDuration', data.filepath);
         if (!isNaN(result)) {
             duration = result;
         }
@@ -245,11 +247,11 @@ const effect: EffectType<EffectModel & OverlayData> = {
             duration
         );
         // send event to the overlay
-        modules.httpServer.sendToOverlay('better-random-video', data);
+        modules.httpServer.sendToOverlay('play-video-plus-plus', data);
 
         if (effect.wait) {
             let internalDuration: any = data.videoDuration;
-            if (internalDuration == null || internalDuration === 0 || internalDuration === "") {
+            if (internalDuration == null || internalDuration === 0 || internalDuration === '') {
                 internalDuration = duration;
             }
             await wait(internalDuration * 1000);
@@ -268,7 +270,7 @@ const effect: EffectType<EffectModel & OverlayData> = {
             js: []
         },
         event: {
-            name: 'better-random-video',
+            name: 'play-video-plus-plus',
             onOverlayEvent: (event: any) => {
                 // @ts-ignore
                 if (!startedVidCache) {

@@ -6,6 +6,22 @@ class VideoManager {
     private _db: JsonDB;
     private _modules: ScriptModules;
 
+    constructor(path: string, modules: ScriptModules) {
+        this._modules = modules;
+        // @ts-ignore
+        // filePath, saveOnPush, humanReadable
+        this._db = new modules.JsonDb(path, true, true);
+
+        modules.frontendCommunicator.on(
+            'play-video-plus-plus:clear-videos-played',
+            args => {
+                const effect_id = args as any as string;
+
+                this.setAllVideosUnplayed(effect_id);
+            }
+        );
+    }
+
     private getCopy(json_data: any): any {
         return JSON.parse(JSON.stringify(json_data));
     }
@@ -23,6 +39,22 @@ class VideoManager {
 
         // Return the videos from the database
         return videos;
+    }
+
+    public setAllVideosUnplayed(effect_id: string): void {
+        // Get all videos from the database
+        const videos: Video[] = this.getCopy(this.getVideos(effect_id));
+
+        // If there are no videos in the database, return
+        if (!videos.length) {
+            return;
+        }
+
+        // Set all videos to unplayed
+        videos.forEach(video => video.played = false);
+
+        // Update the videos in the database
+        this._db.push(`/videos/${effect_id}`, videos, true);
     }
 
     public updateVideos(effect_id: string, videos: Video[]): void {
@@ -75,13 +107,6 @@ class VideoManager {
         this._db.push(`/videos/${effect_id}`, videos, true);
 
         return randomVideo;
-    }
-
-    constructor(path: string, modules: ScriptModules) {
-        this._modules = modules;
-        // @ts-ignore
-        // filePath, saveOnPush, humanReadable
-        this._db = new modules.JsonDb(path, true, true);
     }
 }
 

@@ -10,7 +10,7 @@ const script: Firebot.CustomScript = {
       name: 'Play Video++',
       description: 'A custom script that enhances the \'Play Video\' effect with proper folder randomness and effect output support',
       author: 'Lordmau5',
-      version: '1.0',
+      version: '1.0.1',
       firebotVersion: '5',
     };
   },

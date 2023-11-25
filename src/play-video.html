@@ -37,6 +37,20 @@
     </div>
 </eos-container>
 
+<eos-container header="Clear Played Videos" ng-if="effect.videoType == 'Random From Folder'" pad-top="true">
+    <p>
+        This will clear the played videos cache.
+        <br>
+        Useful in case you want to let ALL videos play again without having to wait for them to appear naturally.
+    </p>
+    <button type="button" class="btn btn-default" ng-click="clearVideosPlayed();" ng-disabled="playedVideosCleared">
+        <span>Clear Played Videos</span>
+    </button>
+    <p ng-if="playedVideosCleared">
+        <strong>Played videos cache has been cleared.</strong>
+    </p>
+</eos-container>
+
 <eos-container header="Duration" pad-top="true">
     <div class="input-group">
         <span class="input-group-addon">Seconds</span>
