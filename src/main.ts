@@ -7,8 +7,8 @@ import { createVideoManager } from './video-manager';
 const script: Firebot.CustomScript = {
   getScriptManifest: () => {
     return {
-      name: 'Better Random Video',
-      description: 'A custom script that plays a random video from a folder without repeating',
+      name: 'Play Video++',
+      description: 'A custom script that enhances the \'Play Video\' effect with proper folder randomness and effect output support',
       author: 'Lordmau5',
       version: '1.0',
       firebotVersion: '5',
@@ -19,8 +19,8 @@ const script: Firebot.CustomScript = {
   },
   run: async (runRequest) => {
     const eventSource: EventSource = {
-      id: 'better-random-video',
-      name: 'Better Random Video',
+      id: 'play-video-plus-plus',
+      name: 'Play Video++',
       events: []
     };
     autoload(runRequest.modules, eventSource);
@@ -28,7 +28,7 @@ const script: Firebot.CustomScript = {
     settings = runRequest.firebot.settings;
 
     try {
-      createVideoManager(modules.path.join(SCRIPTS_DIR, '..', 'db', 'betterVideosDB.db'), modules);
+      createVideoManager(modules.path.join(SCRIPTS_DIR, '..', 'db', 'playVideoPlusPlus.db'), modules);
     } catch (error) {
       debugger;
     }

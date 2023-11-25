@@ -12,6 +12,9 @@ const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 interface EffectModel {
     id: string;
 
+    videoType: 'Local Video' | 'Random From Folder';
+    file: string;
+
     wait: boolean;
     loop: boolean;
 
@@ -42,11 +45,36 @@ interface OverlayData {
     };
 }
 
+/* https://github.com/crowbartools/Firebot/blob/master/src/backend/common/handlers/mediaProcessor.js#L40-L44 */
+function getRandomInt(min: number, max: number): number {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+/* https://github.com/crowbartools/Firebot/blob/master/src/backend/common/handlers/mediaProcessor.js#L46-L61 */
+function getRandomPresetLocation(): string {
+    const presetPositions = [
+        "Top Left",
+        "Top Middle",
+        "Top Right",
+        "Middle Left",
+        "Middle",
+        "Middle Right",
+        "Bottom Left",
+        "Bottom Middle",
+        "Bottom Right"
+    ];
+
+    const randomIndex = getRandomInt(0, presetPositions.length - 1);
+    return presetPositions[randomIndex];
+}
+
 const effect: EffectType<EffectModel & OverlayData> = {
     definition: {
-        id: 'lordmau5:playvideo:play-random-video',
-        name: 'Better Play Random Video',
-        description: 'Play a random video from a folder without repeating',
+        id: 'lordmau5:playvideo:play-video-plus-plus',
+        name: 'Play Video++',
+        description: 'Enhanced version of the Play Video effect with folder support and effect outputs',
         icon: 'fad fa-video',
         // @ts-ignore
         categories: ['common', 'overlay'],
@@ -84,6 +112,16 @@ const effect: EffectType<EffectModel & OverlayData> = {
             "Bottom Right"
         ];
 
+        // Set Video Type
+        $scope.setVideoType = function (type: 'Local Video' | 'Random From Folder') {
+            $scope.effect.videoType = type;
+            $scope.effect.file = '';
+
+            $timeout(function () {
+                // $rootScope.$broadcast("rzSliderForceRender");
+            }, 100);
+        };
+
         if ($scope.effect.volume == null) {
             $scope.effect.volume = 5;
         }
@@ -113,18 +151,27 @@ const effect: EffectType<EffectModel & OverlayData> = {
             }
         };
     },
+    optionsValidator: (effect) => {
+        const errors = [];
+
+        if (effect.videoType == null) {
+            errors.push('Please select a video type.');
+        }
+
+        return errors;
+    },
     onTriggerEvent: async (scope) => {
         const effect = scope.effect;
 
         // What should this do when triggered.
         let position = effect.position;
-        // if (position === "Random") {
-        //     position = mediaProcessor.randomLocation();
-        // }
+        if (position === 'Random') {
+            position = getRandomPresetLocation();
+        }
 
         // Send data back to media.js in the gui.
         const data = {
-            filepath: '',
+            filepath: effect.file,
             videoPosition: position,
             videoHeight: effect.height,
             videoWidth: effect.width,
@@ -145,32 +192,34 @@ const effect: EffectType<EffectModel & OverlayData> = {
             overlayInstance: null,
         };
 
-        // Get random sound
-        let files: string[] = [];
-        try {
-            files = await fs.readdir(effect.folder);
-        } catch (err) {
-            modules.logger.error('Unable to read video folder', err);
-            return false;
-        }
+        if (effect.videoType === 'Random From Folder') {
+            // Get random sound
+            let files: string[] = [];
+            try {
+                files = await fs.readdir(effect.folder);
+            } catch (err) {
+                modules.logger.error('Unable to read video folder', err);
+                return false;
+            }
 
-        const videos: Video[] = [];
-        files.forEach(file => {
-            videos.push({
-                path: file,
-                played: false
+            const videos: Video[] = [];
+            files.forEach(file => {
+                videos.push({
+                    path: file,
+                    played: false
+                });
             });
-        });
 
-        videoManager.updateVideos(effect.id, videos);
+            videoManager.updateVideos(effect.id, videos);
 
-        const video = videoManager.getUnplayedVideo(effect.id);
+            const video = videoManager.getUnplayedVideo(effect.id);
 
-        if (video != null) {
-            data.filepath = modules.path.join(effect.folder, video.path);
-        } else {
-            modules.logger.error('No video were found in the selected video folder.');
-            return false;
+            if (video != null) {
+                data.filepath = modules.path.join(effect.folder, video.path);
+            } else {
+                modules.logger.error('No video were found in the selected video folder.');
+                return false;
+            }
         }
 
         if (settings.useOverlayInstances()) {

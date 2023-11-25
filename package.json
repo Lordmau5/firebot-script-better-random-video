@@ -1,8 +1,8 @@
 {
-  "name": "firebot-script-better-random-video",
-  "scriptOutputName": "better-random-video",
+  "name": "firebot-script-play-video-plus-plus",
+  "scriptOutputName": "play-video-plus-plus",
   "version": "1.0.0",
-  "description": "A custom script that plays a random video from a folder and keeps track of which ones have been played.",
+  "description": "A custom script that enhances the 'Play Video' effect with proper folder randomness and effect output support.",
   "main": "",
   "scripts": {
     "build": "webpack",
