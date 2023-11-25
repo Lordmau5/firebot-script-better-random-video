@@ -1,11 +1,7 @@
 <eos-container header="Video">
     <div style="padding-bottom: 10px">
-        <div ng-if="shouldShowVideoPlaceholder()" >
+        <div>
             <img src="../images/placeholders/video.png" style="width: 350px;object-fit: scale-down;background: #d7d7d7">
-        </div>
-        <div ng-if="!shouldShowVideoPlaceholder()">
-            <video width="350" controls ng-src="{{effect.file}}">
-            </video>
         </div>
     </div>
 
