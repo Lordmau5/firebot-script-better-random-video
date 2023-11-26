@@ -12,12 +12,29 @@ class VideoManager {
         // filePath, saveOnPush, humanReadable
         this._db = new modules.JsonDb(path, true, true);
 
+        // Clear played videos for effect ID
         modules.frontendCommunicator.on(
             'play-video-plus-plus:clear-videos-played',
             args => {
                 const effect_id = args as any as string;
 
                 this.setAllVideosUnplayed(effect_id);
+            }
+        );
+
+        // Request played video count
+        modules.frontendCommunicator.onAsync(
+            'play-video-plus-plus:request-played-video-count',
+            async args => {
+                const effect_id = args as any as string;
+
+                const videos: Video[] = this.getCopy(this.getVideos(effect_id));
+                const playedVideos = videos.filter(video => video.played);
+
+                return {
+                    played: playedVideos.length,
+                    total: videos.length
+                };
             }
         );
     }

@@ -46,6 +46,14 @@
     <button type="button" class="btn btn-default" ng-click="clearVideosPlayed();" ng-disabled="playedVideosCleared">
         <span>Clear Played Videos</span>
     </button>
+    <p>
+        <div ng-if="playedData.status === 'fetching'">
+            <strong><em>Fetching unplayed videos...</em></strong>
+        </div>
+        <div ng-if="playedData.status === 'success'">
+            <strong>{{playedData.played}}/{{playedData.total}}</strong> videos have been played.
+        </div>
+    </p>
     <p ng-if="playedVideosCleared">
         <strong>Played videos cache has been cleared.</strong>
     </p>

@@ -1,7 +1,7 @@
 {
   "name": "firebot-script-play-video-plus-plus",
   "scriptOutputName": "play-video-plus-plus",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A custom script that enhances the 'Play Video' effect with proper folder randomness and effect output support.",
   "main": "",
   "scripts": {

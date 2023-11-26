@@ -108,10 +108,28 @@ const effect: EffectType<EffectModel & OverlayData> = {
             "Bottom Right"
         ];
 
+        // Request played video count
+        $scope.playedData = {
+            status: 'fetching',
+            played: 0,
+            total: 0,
+        };
+        $q.when(backendCommunicator.fireEventAsync('play-video-plus-plus:request-played-video-count', $scope.effect.id))
+            .then((result: { played: number, total: number }) => {
+                $scope.playedData = {
+                    status: 'success',
+                    played: result.played,
+                    total: result.total,
+                };
+            });
+
         // Clear videos played state
         $scope.clearVideosPlayed = function () {
             backendCommunicator.fireEvent('play-video-plus-plus:clear-videos-played', $scope.effect.id);
             $scope.playedVideosCleared = true;
+
+            // @ts-ignore
+            $scope.playedData.played = 0;
         };
 
         // Set Video Type
