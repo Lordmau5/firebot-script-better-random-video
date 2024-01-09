@@ -1,6 +1,9 @@
 import {ScriptModules} from "@crowbartools/firebot-custom-scripts-types";
 import {JsonDB} from "node-json-db";
 import Video from "./@types/Video";
+import { modules } from "./main";
+
+import * as fs from 'fs-extra';
 
 class VideoManager {
     private _db: JsonDB;
@@ -74,30 +77,39 @@ class VideoManager {
         this._db.push(`/videos/${effect_id}`, videos, true);
     }
 
-    public updateVideos(effect_id: string, videos: Video[]): void {
+    public async updateVideos(effect_id: string, effect_folder: string): Promise<boolean> {
         // Get all videos from the database
         const dbVideos: Video[] = this.getCopy(this.getVideos(effect_id));
 
-        // If there are no videos in the database, set the videos to the database and return
-        if (!dbVideos.length) {
-            this._modules.logger.debug(`No videos found for ${effect_id}, setting videos to the database.`);
-            this._db.push(`/videos/${effect_id}`, videos, true);
-            return;
+        // Get all files in the effect folder
+        let files: string[] = [];
+        try {
+            files = await fs.readdir(effect_folder);
+        } catch (err) {
+            modules.logger.error('Unable to read video folder', err);
+            return false;
         }
 
-        // If there are videos in the database, check if the length is the same, if not, update the videos and return
-        if (dbVideos.length !== videos.length) {
-            this._modules.logger.debug(`Videos length mismatch for ${effect_id}, updating videos.`);
-            this._db.push(`/videos/${effect_id}`, videos, true);
-            return;
-        }
+        const paths = files.map(file => modules.path.join(effect_folder, file));
 
-        // If the length is the same, check if the videos are the same based on their name using .every
-        // If not, update the videos
-        if (!dbVideos.every((video, index) => video.path === videos[index].path)) {
-            this._modules.logger.debug(`Videos mismatch for ${effect_id}, updating videos.`);
-            this._db.push(`/videos/${effect_id}`, videos, true);
-        }
+        // Get file sizes in parallel
+        const fileSizes = await Promise.all(paths.map(path => fs.stat(path).then(stat => stat.size)));
+
+        const videos: Video[] = paths.map((path, index) => {
+            const present_video = dbVideos.find(video => video.path === path);
+            const equal_file_size = present_video?.size === fileSizes[index];
+
+            return equal_file_size ? present_video : {
+                path,
+                played: false,
+                size: fileSizes[index]
+            };
+        });
+
+        this._modules.logger.debug(`Updating videos for ${effect_id}.`);
+        this._db.push(`/videos/${effect_id}`, videos, true);
+
+        return true;
     }
 
     public getUnplayedVideo(effect_id: string): Video {

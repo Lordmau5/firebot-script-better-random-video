@@ -213,31 +213,18 @@ const effect: EffectType<EffectModel & OverlayData> = {
         };
 
         if (effect.videoType === 'Random From Folder') {
-            // Get random sound
-            let files: string[] = [];
-            try {
-                files = await fs.readdir(effect.folder);
-            } catch (err) {
-                modules.logger.error('Unable to read video folder', err);
-                return false;
+            // Update the videos in the database
+            if (!await videoManager.updateVideos(effect.id, effect.folder)) {
+                return;
             }
 
-            const videos: Video[] = [];
-            files.forEach(file => {
-                videos.push({
-                    path: file,
-                    played: false
-                });
-            });
-
-            videoManager.updateVideos(effect.id, videos);
-
+            // Get a random video from the videos array that isn't played
             const video = videoManager.getUnplayedVideo(effect.id);
 
             if (video != null) {
-                data.filepath = modules.path.join(effect.folder, video.path);
+                data.filepath = video.path;
             } else {
-                modules.logger.error('No video were found in the selected video folder.');
+                modules.logger.error('No videos were found in the selected video folder.');
                 return false;
             }
         }
