@@ -1,5 +1,5 @@
-import {ScriptModules} from "@crowbartools/firebot-custom-scripts-types";
-import {JsonDB} from "node-json-db";
+import { ScriptModules } from "@crowbartools/firebot-custom-scripts-types";
+import { JsonDB } from "node-json-db";
 import Video from "./@types/Video";
 import { modules } from "./main";
 

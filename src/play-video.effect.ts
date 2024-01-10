@@ -1,11 +1,8 @@
-import * as fs from 'fs-extra';
-
 import { Effects } from '@crowbartools/firebot-custom-scripts-types/types/effects';
-import template from './play-video.html'
 import { modules, settings } from './main';
-import EffectType = Effects.EffectType;
+import template from './play-video.html';
 import { videoManager } from './video-manager';
-import Video from './@types/Video';
+import EffectType = Effects.EffectType;
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 

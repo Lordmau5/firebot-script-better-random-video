@@ -1,7 +1,7 @@
 import { Firebot, ScriptModules } from '@crowbartools/firebot-custom-scripts-types';
-import { autoload } from './autoload';
 import { EventSource } from '@crowbartools/firebot-custom-scripts-types/types/modules/event-manager';
 import { FirebotSettings } from '@crowbartools/firebot-custom-scripts-types/types/settings';
+import { autoload } from './autoload';
 import { createVideoManager } from './video-manager';
 
 const script: Firebot.CustomScript = {
