@@ -1,32 +1,23 @@
-# Starter Firebot Custom Script in Typescript
+# Firebot Better Random Video Custom Script
 
-## A very opinionated Firebot Script template.
+## A custom script that adds an improved `Play Random Video` effect with proper folder randomness and effect output support
 
-### Setup
-1. Create a new repo based off this template (Click "Use this Template" above) or simply fork it
-2. `npm install`
+### How to install
+1. Go to the [releases](https://github.com/Lordmau5/firebot-script-better-random-video/releases/) tab and download the latest `better-random-video.js`
+2. Open Firebot and head to Settings -> Scripts -> Manage Startup Scripts
+3. Click `Add New Script`
+4. Click on the `scripts folder` link in the popup and place the `better-random-video.js` inside
+5. Click the blue reload button next to the `Pick one` dropdown to refresh the available scripts
+6. Select `better-random-video.js` in the dropdown
+7. Click `Save` - You might have to restart Firebot for the script to load.
 
-### Development
-This template will automatically load the default export from the following:
-- System Commands (*.command.ts)
-- Conditions (*.condition.ts)
-- Effects (*.effect.ts)
-- Events (*.event.ts) - Use the EventSource in [main.ts](src%2Fmain.ts)
-- Event Filters (*.filter.ts)
-- Firebot Games (*.game.ts)
-- Integrations (*.integration.ts)
-- Command Restrictions (*.restriction.ts)
-- Replace Variables (*.variable.ts)
+### How to use
+This script works similarly to the integrated `Play Video` effect.
 
-### Building
-Dev:
-1. `npm run build:dev`
-- Automatically copies the compiled .js to Firebot's scripts folder.
+However, it keeps track of which videos in a folder it already played and will make sure that every video plays at least once.  
+Once no videos are left, it will clear the list and start over.
 
-Release:
-1. `npm run build`
-- Copy .js from `/dist`
+Additionally, this effect has effect outputs.  
+For now, it only has `$effectOutput[videoLength]` to get the length of the played video and use it in another effect, such as `Show Text`.
 
-### Note
-- Keep the script definition object (that contains the `run`, `getScriptManifest`, and `getDefaultParameters` funcs) in the `index.ts` file as it's important those function names don't get minimized.
-- Edit the `"scriptOutputName"` property in `package.json` to change the filename of the outputted script.
+An added bonus is that it also supports a single video file so you can use the effect outputs for that, too.
