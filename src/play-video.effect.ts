@@ -1,7 +1,13 @@
-import { Effects } from '@crowbartools/firebot-custom-scripts-types/types/effects';
-import { modules, settings } from './main';
+import {
+	Effects
+} from '@crowbartools/firebot-custom-scripts-types/types/effects';
+import {
+	modules, settings
+} from './main';
 import template from './play-video.html';
-import { videoManager } from './video-manager';
+import {
+	videoManager
+} from './video-manager';
 import EffectType = Effects.EffectType;
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -42,24 +48,26 @@ interface OverlayData {
 function getRandomInt(min: number, max: number): number {
 	min = Math.ceil(min);
 	max = Math.floor(max);
+
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 /* https://github.com/crowbartools/Firebot/blob/master/src/backend/common/handlers/mediaProcessor.js#L46-L61 */
 function getRandomPresetLocation(): string {
 	const presetPositions = [
-		"Top Left",
-		"Top Middle",
-		"Top Right",
-		"Middle Left",
-		"Middle",
-		"Middle Right",
-		"Bottom Left",
-		"Bottom Middle",
-		"Bottom Right"
+		'Top Left',
+		'Top Middle',
+		'Top Right',
+		'Middle Left',
+		'Middle',
+		'Middle Right',
+		'Bottom Left',
+		'Bottom Middle',
+		'Bottom Right'
 	];
 
 	const randomIndex = getRandomInt(0, presetPositions.length - 1);
+
 	return presetPositions[randomIndex];
 }
 
@@ -70,17 +78,18 @@ const effect: EffectType<EffectModel & OverlayData> = {
 		description: 'Improved version of the \'Play Random Video\' effect with proper folder randomness and effect output support',
 		icon: 'fad fa-video',
 		// @ts-ignore
-		categories: ['common', 'overlay'],
+		categories: [
+			'common',
+			'overlay'
+		],
 		// @ts-ignore
-		dependencies: ['overlay'],
+		dependencies: [ 'overlay' ],
 		// @ts-ignore
-		outputs: [
-			{
-				label: 'Video Length',
-				description: 'The played video length in seconds.',
-				defaultName: 'videoLength'
-			}
-		]
+		outputs: [ {
+			label: 'Video Length',
+			description: 'The played video length in seconds.',
+			defaultName: 'videoLength'
+		} ]
 	},
 	optionsTemplate: template,
 	optionsController: ($scope, utilityService: any, backendCommunicator: any, $q: any, $timeout: any) => {
@@ -89,39 +98,39 @@ const effect: EffectType<EffectModel & OverlayData> = {
 				$scope.effect.loop = false;
 			}
 		};
-		$scope.showOverlayInfoModal = function (overlayInstance: any) {
+		$scope.showOverlayInfoModal = function(overlayInstance: any) {
 			utilityService.showOverlayInfoModal(overlayInstance);
 		};
 
 		$scope.videoPositions = [
-			"Top Left",
-			"Top Middle",
-			"Top Right",
-			"Middle Left",
-			"Middle",
-			"Middle Right",
-			"Bottom Left",
-			"Bottom Middle",
-			"Bottom Right"
+			'Top Left',
+			'Top Middle',
+			'Top Right',
+			'Middle Left',
+			'Middle',
+			'Middle Right',
+			'Bottom Left',
+			'Bottom Middle',
+			'Bottom Right'
 		];
 
 		// Request played video count
 		$scope.playedData = {
 			status: 'fetching',
 			played: 0,
-			total: 0,
+			total: 0
 		};
 		$q.when(backendCommunicator.fireEventAsync('better-random-video:request-played-video-count', $scope.effect.id))
 			.then((result: { played: number, total: number }) => {
 				$scope.playedData = {
 					status: 'success',
 					played: result.played,
-					total: result.total,
+					total: result.total
 				};
 			});
 
 		// Clear videos played state
-		$scope.clearVideosPlayed = function () {
+		$scope.clearVideosPlayed = function() {
 			backendCommunicator.fireEvent('better-random-video:clear-videos-played', $scope.effect.id);
 			$scope.playedVideosCleared = true;
 
@@ -130,7 +139,7 @@ const effect: EffectType<EffectModel & OverlayData> = {
 		};
 
 		// Set Video Type
-		$scope.setVideoType = function (type: 'Local Video' | 'Random From Folder') {
+		$scope.setVideoType = function(type: 'Local Video' | 'Random From Folder') {
 			$scope.effect.videoType = type;
 			$scope.effect.file = '';
 		};
@@ -141,30 +150,33 @@ const effect: EffectType<EffectModel & OverlayData> = {
 
 		// Force ratio toggle
 		$scope.forceRatio = true;
-		$scope.forceRatioToggle = function () {
+		$scope.forceRatioToggle = function() {
 			if ($scope.forceRatio === true) {
 				$scope.forceRatio = false;
-			} else {
+			}
+			else {
 				$scope.forceRatio = true;
 			}
 		};
 
 		// Calculate 16:9
 		// This checks to see which field the user is filling out, and then adjust the other field so it's always 16:9.
-		$scope.calculateSize = function (widthOrHeight: 'Width' | 'Height', size: any) {
-			if (size !== "") {
-				if (widthOrHeight === "Width" && $scope.forceRatio === true) {
+		$scope.calculateSize = function(widthOrHeight: 'Width' | 'Height', size: any) {
+			if (size !== '') {
+				if (widthOrHeight === 'Width' && $scope.forceRatio === true) {
 					$scope.effect.height = String(Math.round((size / 16) * 9));
-				} else if (widthOrHeight === "Height" && $scope.forceRatio === true) {
+				}
+				else if (widthOrHeight === 'Height' && $scope.forceRatio === true) {
 					$scope.effect.width = String(Math.round((size * 16) / 9));
 				}
-			} else {
-				$scope.effect.height = "";
-				$scope.effect.width = "";
+			}
+			else {
+				$scope.effect.height = '';
+				$scope.effect.width = '';
 			}
 		};
 	},
-	optionsValidator: (effect) => {
+	optionsValidator: effect => {
 		const errors = [];
 
 		if (effect.file == null) {
@@ -173,7 +185,7 @@ const effect: EffectType<EffectModel & OverlayData> = {
 
 		return errors;
 	},
-	onTriggerEvent: async (scope) => {
+	onTriggerEvent: async scope => {
 		const effect = scope.effect;
 
 		// What should this do when triggered.
@@ -202,7 +214,7 @@ const effect: EffectType<EffectModel & OverlayData> = {
 			customCoords: effect.customCoords,
 			loop: effect.loop === true,
 			// @ts-ignore
-			overlayInstance: null,
+			overlayInstance: null
 		};
 
 		if (effect.videoType === 'Random From Folder') {
@@ -216,8 +228,10 @@ const effect: EffectType<EffectModel & OverlayData> = {
 
 			if (video != null) {
 				data.filepath = video.path;
-			} else {
+			}
+			else {
 				modules.logger.error('No videos were found in the selected video folder.');
+
 				return false;
 			}
 		}
@@ -273,26 +287,27 @@ const effect: EffectType<EffectModel & OverlayData> = {
 				// @ts-ignore
 				if (!startedVidCache) {
 					// @ts-ignore
-					startedVidCache = {};
+					startedVidCache = {
+					};
 				}
 
 				function animateVideoExit(idString: any, animation: any, duration: any, inbetweenAnimation: any) {
 					if (inbetweenAnimation) {
 						// @ts-ignore
-						$(idString).find(".inner-position").css("animation-duration", "");
+						$(idString).find('.inner-position').css('animation-duration', '');
 						// @ts-ignore
-						$(idString).find(".inner-position").css("animation-delay", "");
+						$(idString).find('.inner-position').css('animation-delay', '');
 						// @ts-ignore
-						$(idString).find(".inner-position").css("animation-iteration-count", "");
+						$(idString).find('.inner-position').css('animation-iteration-count', '');
 						// @ts-ignore
 						$(idString)
-							.find(".inner-position")
-							.removeClass("animated " + inbetweenAnimation);
+							.find('.inner-position')
+							.removeClass('animated ' + inbetweenAnimation);
 					}
 
 					// @ts-ignore
 					$(idString)
-						.find(".inner-position")
+						.find('.inner-position')
 						.animateCss(animation, duration, null, null, () => {
 							// @ts-ignore
 							$(idString).remove();
@@ -301,34 +316,33 @@ const effect: EffectType<EffectModel & OverlayData> = {
 
 				const data = event;
 
-				const filepath = data.filepath ?? "";
-				let fileExt = filepath.split(".").pop();
-				if (fileExt === "ogv") {
-					fileExt = "ogg";
+				const filepath = data.filepath ?? '';
+				let fileExt = filepath.split('.').pop();
+				if (fileExt === 'ogv') {
+					fileExt = 'ogg';
 				}
 
-				const videoDuration =
-					data.videoDuration != null && data.videoDuration !== ""
+				const videoDuration
+					= data.videoDuration != null && data.videoDuration !== ''
 						? parseFloat(data.videoDuration) * 1000
 						: null;
 				let videoVolume = data.videoVolume;
-				let videoStarttime = data.videoStarttime || 0;
 				const loop = data.loop;
 
 				const token = encodeURIComponent(data.resourceToken);
-				const filepathNew = `http://${window.location.hostname}:7472/resource/${token}`;
+				const filepathNew = `http://${ window.location.hostname }:7472/resource/${ token }`;
 
 				// Generate UUID to use as id
 				// @ts-ignore
 				const uuid = uuidv4();
-				const videoPlayerId = `${uuid}-video`;
+				const videoPlayerId = `${ uuid }-video`;
 
-				const enterAnimation = data.enterAnimation ? data.enterAnimation : "fadeIn";
-				const exitAnimation = data.exitAnimation ? data.exitAnimation : "fadeIn";
+				const enterAnimation = data.enterAnimation ? data.enterAnimation : 'fadeIn';
+				const exitAnimation = data.exitAnimation ? data.exitAnimation : 'fadeIn';
 				const enterDuration = data.enterDuration;
 				const exitDuration = data.exitDuration;
 
-				const inbetweenAnimation = data.inbetweenAnimation ? data.inbetweenAnimation : "none";
+				const inbetweenAnimation = data.inbetweenAnimation ? data.inbetweenAnimation : 'none';
 				const inbetweenDuration = data.inbetweenDuration;
 				const inbetweenDelay = data.inbetweenDelay;
 				const inbetweenRepeat = data.inbetweenRepeat;
@@ -338,15 +352,15 @@ const effect: EffectType<EffectModel & OverlayData> = {
 					customCoords: data.customCoords
 				};
 
-				const sizeStyles =
-					(data.videoWidth ? `width: ${data.videoWidth}px;` : "") +
-					(data.videoHeight ? `height: ${data.videoHeight}px;` : "");
+				const sizeStyles
+					= (data.videoWidth ? `width: ${ data.videoWidth }px;` : '')
+					+ (data.videoHeight ? `height: ${ data.videoHeight }px;` : '');
 
-				const loopAttribute = loop ? "loop" : "";
+				const loopAttribute = loop ? 'loop' : '';
 
 				const videoElement = `
-                    <video id="${videoPlayerId}" class="player" ${loopAttribute} style="display:none;${sizeStyles}">
-                        <source src="${filepathNew}" type="video/${fileExt}">
+                    <video id="${ videoPlayerId }" class="player" ${ loopAttribute } style="display:none;${ sizeStyles }">
+                        <source src="${ filepathNew }" type="video/${ fileExt }">
                     </video>
                 `;
 
@@ -356,7 +370,7 @@ const effect: EffectType<EffectModel & OverlayData> = {
 				const wrappedHtml = getPositionWrappedHTML(wrapperId, positionData, videoElement);
 
 				// @ts-ignore
-				$(".wrapper").append(wrappedHtml);
+				$('.wrapper').append(wrappedHtml);
 
 				// Adjust volume
 				if (isNaN(videoVolume)) {
@@ -365,10 +379,10 @@ const effect: EffectType<EffectModel & OverlayData> = {
 
 				videoVolume = parseInt(videoVolume) / 10;
 				// @ts-ignore
-				$(`#${videoPlayerId}`).prop("volume", videoVolume);
+				$(`#${ videoPlayerId }`).prop('volume', videoVolume);
 
 				const video = document.getElementById(videoPlayerId);
-				video.oncanplay = function () {
+				video.oncanplay = function() {
 					// @ts-ignore
 					if (startedVidCache[this.id]) {
 						return;
@@ -380,41 +394,43 @@ const effect: EffectType<EffectModel & OverlayData> = {
 					try {
 						// @ts-ignore
 						video.play();
-					} catch (err) {
+					}
+					catch (err) {
 						console.log(err);
 					}
 					// @ts-ignore
-					const videoEl = $(`#${videoPlayerId}`);
+					const videoEl = $(`#${ videoPlayerId }`);
 					videoEl.show();
 
 					// @ts-ignore
-					$(`#${wrapperId}`)
-						.find(".inner-position")
+					$(`#${ wrapperId }`)
+						.find('.inner-position')
 						.animateCss(enterAnimation, enterDuration, null, null, () => {
 							// @ts-ignore
-							$(`#${wrapperId}`)
-								.find(".inner-position")
+							$(`#${ wrapperId }`)
+								.find('.inner-position')
 								.animateCss(inbetweenAnimation, inbetweenDuration, inbetweenDelay, inbetweenRepeat);
 						});
 
 					const exitVideo = () => {
 						// @ts-ignore
 						delete startedVidCache[this.id];
-						animateVideoExit(`#${wrapperId}`, exitAnimation, exitDuration, inbetweenAnimation);
+						animateVideoExit(`#${ wrapperId }`, exitAnimation, exitDuration, inbetweenAnimation);
 					};
 
 					// Remove div after X time.
 					if (videoDuration) {
-						setTimeout(function () {
+						setTimeout(function() {
 							exitVideo();
 						}, videoDuration);
-					} else {
-						video.onended = function () {
+					}
+					else {
+						video.onended = function() {
 							exitVideo();
 						};
 
 						// @ts-ignore
-						$(`#${videoPlayerId}`).on("error", function () {
+						$(`#${ videoPlayerId }`).on('error', function() {
 							exitVideo();
 						});
 					}
@@ -422,6 +438,6 @@ const effect: EffectType<EffectModel & OverlayData> = {
 			}
 		}
 	}
-}
+};
 
 export default effect;

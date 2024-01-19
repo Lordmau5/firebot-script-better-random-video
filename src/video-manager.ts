@@ -1,12 +1,19 @@
-import { ScriptModules } from "@crowbartools/firebot-custom-scripts-types";
-import { JsonDB } from "node-json-db";
-import Video from "./@types/Video";
-import { modules } from "./main";
+import {
+	ScriptModules
+} from '@crowbartools/firebot-custom-scripts-types';
+import {
+	JsonDB
+} from 'node-json-db';
+import Video from './@types/Video';
+import {
+	modules
+} from './main';
 
 import * as fs from 'fs-extra';
 
 class VideoManager {
 	private _db: JsonDB;
+
 	private _modules: ScriptModules;
 
 	constructor(path: string, modules: ScriptModules) {
@@ -50,11 +57,11 @@ class VideoManager {
 		let videos: Video[] = [];
 		try {
 			// Try to get the videos from the database
-			videos = this._db.getData(`/videos/${effect_id}`);
+			videos = this._db.getData(`/videos/${ effect_id }`);
 		}
 		catch (err) {
 			// If there are no videos in the database, set the videos to an empty array
-			this._db.push(`/videos/${effect_id}`, videos, true);
+			this._db.push(`/videos/${ effect_id }`, videos, true);
 		}
 
 		// Return the videos from the database
@@ -74,7 +81,7 @@ class VideoManager {
 		videos.forEach(video => video.played = false);
 
 		// Update the videos in the database
-		this._db.push(`/videos/${effect_id}`, videos, true);
+		this._db.push(`/videos/${ effect_id }`, videos, true);
 	}
 
 	public async updateVideos(effect_id: string, effect_folder: string): Promise<boolean> {
@@ -85,8 +92,10 @@ class VideoManager {
 		let files: string[] = [];
 		try {
 			files = await fs.readdir(effect_folder);
-		} catch (err) {
+		}
+		catch (err) {
 			modules.logger.error('Unable to read video folder', err);
+
 			return false;
 		}
 
@@ -106,8 +115,8 @@ class VideoManager {
 			};
 		});
 
-		this._modules.logger.debug(`Updating videos for ${effect_id}.`);
-		this._db.push(`/videos/${effect_id}`, videos, true);
+		this._modules.logger.debug(`Updating videos for ${ effect_id }.`);
+		this._db.push(`/videos/${ effect_id }`, videos, true);
 
 		return true;
 	}
@@ -120,7 +129,7 @@ class VideoManager {
 
 		// Get a random video from the videos array that isn't played
 		let unplayedVideos = videos.filter(video => !video.played);
-		this._modules.logger.debug(`Found ${unplayedVideos.length} unplayed videos for ${effect_id}.`);
+		this._modules.logger.debug(`Found ${ unplayedVideos.length } unplayed videos for ${ effect_id }.`);
 		if (!unplayedVideos.length) {
 			videos.forEach(video => video.played = false);
 
@@ -133,7 +142,7 @@ class VideoManager {
 
 		// Set this video to played and update it in the database
 		randomVideo.played = true;
-		this._db.push(`/videos/${effect_id}`, videos, true);
+		this._db.push(`/videos/${ effect_id }`, videos, true);
 
 		return randomVideo;
 	}
@@ -146,5 +155,6 @@ export function createVideoManager(path: string, modules: ScriptModules) {
 		return videoManager;
 	}
 	videoManager = new VideoManager(path, modules);
+
 	return videoManager;
 }

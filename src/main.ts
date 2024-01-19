@@ -1,8 +1,18 @@
-import { Firebot, ScriptModules } from '@crowbartools/firebot-custom-scripts-types';
-import { EventSource } from '@crowbartools/firebot-custom-scripts-types/types/modules/event-manager';
-import { FirebotSettings } from '@crowbartools/firebot-custom-scripts-types/types/settings';
-import { autoload } from './autoload';
-import { createVideoManager } from './video-manager';
+import {
+	Firebot, ScriptModules
+} from '@crowbartools/firebot-custom-scripts-types';
+import {
+	EventSource
+} from '@crowbartools/firebot-custom-scripts-types/types/modules/event-manager';
+import {
+	FirebotSettings
+} from '@crowbartools/firebot-custom-scripts-types/types/settings';
+import {
+	autoload
+} from './autoload';
+import {
+	createVideoManager
+} from './video-manager';
 
 const script: Firebot.CustomScript = {
 	getScriptManifest: () => {
@@ -11,13 +21,14 @@ const script: Firebot.CustomScript = {
 			description: 'A custom script that adds an improved \'Play Random Video\' effect with proper folder randomness and effect output support',
 			author: 'Lordmau5',
 			version: '1.0.4',
-			firebotVersion: '5',
+			firebotVersion: '5'
 		};
 	},
 	getDefaultParameters: () => {
-		return {};
+		return {
+		};
 	},
-	run: async (runRequest) => {
+	run: async runRequest => {
 		const eventSource: EventSource = {
 			id: 'better-random-video',
 			name: 'Better Random Video',
@@ -29,7 +40,9 @@ const script: Firebot.CustomScript = {
 
 		try {
 			createVideoManager(modules.path.join(SCRIPTS_DIR, '..', 'db', 'betterRandomVideo.db'), modules);
-		} catch (error) {
+		}
+		catch (error) {
+			// eslint-disable-next-line no-debugger
 			debugger;
 		}
 	}
